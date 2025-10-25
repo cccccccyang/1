@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESpace - Create Event</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'washu-red': '#9D2235',
+                        'washu-red-hover': '#8a1e30',
+                        'washu-red-light': 'rgba(157, 34, 53, 0.1)',
+                        'washu-red-border': 'rgba(157, 34, 53, 0.28)'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen">
+    <div class="max-w-4xl mx-auto px-4 py-8">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-washu-red mb-2">Create Event</h1>
+            <p class="text-gray-600 text-lg">Fill out the form below to create your event</p>
+        </header>
+
+        <!-- Status Messages -->
+        <div id="status-message" class="hidden p-4 mb-6 rounded-lg font-medium" aria-live="polite" aria-atomic="true"></div>
+
+        <form id="event-form" class="bg-white p-8 rounded-xl shadow-lg border border-gray-200">
+            <!-- Event Name -->
+            <div class="mb-6">
+                <label for="event-name" class="block mb-2 font-semibold text-gray-900">Event Name *</label>
+                <input 
+                    type="text" 
+                    id="event-name" 
+                    name="eventName" 
+                    required 
+                    aria-describedby="event-name-error"
+                    placeholder="Enter event name"
+                    class="w-full px-3 py-3 border-2 border-gray-300 rounded-lg text-base bg-white text-gray-900 transition-colors duration-200 focus:outline-none focus:border-washu-red focus:ring-3 focus:ring-washu-red-border"
+                >
+                <div id="event-name-error" class="hidden text-red-600 text-sm mt-1" role="alert"></div>
+            </div>
+
+            <!-- Tags -->
+            <div class="mb-6">
+                <label for="tags-input" class="block mb-2 font-semibold text-gray-900">Tags</label>
+                <div class="border-2 border-gray-300 rounded-lg p-2 min-h-12 bg-white">
+                    <div id="tags-display" class="flex flex-wrap gap-2 mb-2"></div>
+                    <input 
+                        type="text" 
+                        id="tags-input" 
+                        placeholder="Type a tag and press Enter"
+                        aria-describedby="tags-help"
+                        class="border-none p-2 text-base bg-transparent w-full focus:outline-none"
+                    >
+                </div>
+                <div id="tags-help" class="text-gray-600 text-sm mt-1">Press Enter to add a tag, click × to remove</div>
+            </div>
+
+            <!-- Event Time -->
+            <div class="mb-6">
+                <label for="start-time" class="block mb-2 font-semibold text-gray-900">Event Time *</label>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="flex flex-col">
+                        <label for="start-time" class="text-sm mb-1">Start Time</label>
+                        <input 
+                            type="datetime-local" 
+                            id="start-time" 
+                            name="startTime" 
+                            required
+                            aria-describedby="start-time-error"
+                            class="w-full px-3 py-3 border-2 border-gray-300 rounded-lg text-base bg-white text-gray-900 transition-colors duration-200 focus:outline-none focus:border-washu-red focus:ring-3 focus:ring-washu-red-border"
+                        >
+                        <div id="start-time-error" class="hidden text-red-600 text-sm mt-1" role="alert"></div>
+                    </div>
+                    <div class="flex flex-col">
+                        <label for="end-time" class="text-sm mb-1">End Time</label>
+                        <input 
+                            type="datetime-local" 
+                            id="end-time" 
+                            name="endTime" 
+                            required
+                            aria-describedby="end-time-error"
+                            class="w-full px-3 py-3 border-2 border-gray-300 rounded-lg text-base bg-white text-gray-900 transition-colors duration-200 focus:outline-none focus:border-washu-red focus:ring-3 focus:ring-washu-red-border"
+                        >
+                        <div id="end-time-error" class="hidden text-red-600 text-sm mt-1" role="alert"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Location -->
+            <div class="mb-6">
+                <label for="location" class="block mb-2 font-semibold text-gray-900">Location *</label>
+                <input 
+                    type="text" 
+                    id="location" 
+                    name="location" 
+                    required
+                    aria-describedby="location-error"
+                    placeholder="Enter event location"
+                    class="w-full px-3 py-3 border-2 border-gray-300 rounded-lg text-base bg-white text-gray-900 transition-colors duration-200 focus:outline-none focus:border-washu-red focus:ring-3 focus:ring-washu-red-border"
+                >
+                <div id="location-error" class="hidden text-red-600 text-sm mt-1" role="alert"></div>
+            </div>
+
+            <!-- Capacity -->
+            <div class="mb-6">
+                <label for="capacity" class="block mb-2 font-semibold text-gray-900">Capacity *</label>
+                <input 
+                    type="number" 
+                    id="capacity" 
+                    name="capacity" 
+                    min="0"
+                    aria-describedby="capacity-help capacity-error"
+                    placeholder="0 for unlimited"
+                    class="w-full px-3 py-3 border-2 border-gray-300 rounded-lg text-base bg-white text-gray-900 transition-colors duration-200 focus:outline-none focus:border-washu-red focus:ring-3 focus:ring-washu-red-border"
+                >
+                <div id="capacity-help" class="text-gray-600 text-sm mt-1">Enter 0 for unlimited capacity</div>
+                <div id="capacity-error" class="hidden text-red-600 text-sm mt-1" role="alert"></div>
+            </div>
+
+            <!-- Description -->
+            <div class="mb-6">
+                <label for="description" class="block mb-2 font-semibold text-gray-900">Description</label>
+                <textarea 
+                    id="description" 
+                    name="description" 
+                    rows="4"
+                    aria-describedby="description-help"
+                    placeholder="Describe your event..."
+                    class="w-full px-3 py-3 border-2 border-gray-300 rounded-lg text-base bg-white text-gray-900 transition-colors duration-200 focus:outline-none focus:border-washu-red focus:ring-3 focus:ring-washu-red-border resize-vertical"
+                ></textarea>
+                <div id="description-help" class="text-gray-600 text-sm mt-1">Optional description of your event</div>
+            </div>
+
+            <!-- Promo Photo -->
+            <div class="mb-6">
+                <label for="promo-photo" class="block mb-2 font-semibold text-gray-900">Promo Photo</label>
+                <input 
+                    type="file" 
+                    id="promo-photo" 
+                    name="promoPhoto" 
+                    accept="image/jpeg,image/png,image/webp"
+                    aria-describedby="photo-help photo-error photo-preview"
+                    class="w-full px-3 py-3 border-2 border-gray-300 rounded-lg text-base bg-white text-gray-900 transition-colors duration-200 focus:outline-none focus:border-washu-red focus:ring-3 focus:ring-washu-red-border file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-washu-red file:text-white hover:file:bg-washu-red-hover"
+                >
+                <div id="photo-help" class="text-gray-600 text-sm mt-1">JPG, PNG, or WebP format, max 5MB</div>
+                <div id="photo-error" class="hidden text-red-600 text-sm mt-1" role="alert"></div>
+                <div id="photo-preview" class="mt-4 text-center"></div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row gap-4 justify-end mt-8 pt-6 border-t border-gray-200">
+                <button type="button" id="save-draft" class="px-6 py-3 border-2 border-gray-300 rounded-lg font-semibold text-gray-900 bg-transparent hover:bg-gray-50 hover:border-washu-red hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-washu-red focus:ring-offset-2">Save Draft</button>
+                <button type="button" id="publish-event" class="px-6 py-3 bg-washu-red text-white rounded-lg font-semibold hover:bg-washu-red-hover hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-washu-red focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:transform-none disabled:hover:shadow-none" disabled>Publish Event</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="success-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center" role="dialog" aria-labelledby="success-title" aria-describedby="success-message">
+        <div class="bg-white p-8 rounded-xl shadow-2xl max-w-md w-11/12 text-center">
+            <h2 id="success-title" class="text-green-600 mb-4 text-2xl font-bold">Event Published Successfully!</h2>
+            <p id="success-message" class="text-gray-600 mb-6">Do you want to return to the homepage?</p>
+            <div class="flex flex-col gap-4 items-center">
+                <button id="return-home" class="px-6 py-3 bg-washu-red text-white rounded-lg font-semibold hover:bg-washu-red-hover hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-washu-red focus:ring-offset-2">Return Now</button>
+                <div id="countdown" class="text-gray-600 text-sm">Redirecting in <span id="countdown-number" class="font-semibold">3</span> seconds...</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="./main.js"></script>
+</body>
+</html>

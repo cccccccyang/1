@@ -4,94 +4,106 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ESpace User Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'washu-red': '#9D2235',
+                        'washu-red-hover': 'rgba(157, 34, 53, 0.28)',
+                        'washu-red-light': '#B84A5A',
+                        'washu-red-dark': '#7A1B2A',
+                    }
+                }
+            }
+        }
+    </script>
     <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-    <div class="container">
-        <div class="login-card">
-            <header class="login-header">
-                <h1>ESpace User Login</h1>
-                <p class="subtitle">Hi! Welcome to ESpace!
-                </p>
+<body class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
+    <div class="w-full max-w-lg">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 border border-gray-200 hover:shadow-3xl transition-all duration-300">
+            <header class="text-center mb-8">
+                <h1 class="text-3xl font-bold text-washu-red mb-2">ESpace User Login</h1>
+                <p class="text-sm text-gray-600">Hi! Welcome to ESpace!</p>
             </header>
 
-            <form id="loginForm" class="login-form" novalidate>
-                <div class="form-group">
-                    <label for="emailOrUsername" class="form-label">
+            <form id="loginForm" class="flex flex-col gap-6" novalidate>
+                <div class="flex flex-col gap-2">
+                    <label for="emailOrUsername" class="font-semibold text-gray-700 text-sm flex items-center gap-1">
                         Email or Username
-                        <span class="required">*</span>
+                        <span class="text-red-500 font-bold">*</span>
                     </label>
-                    <div class="email-input-group">
-                        <div class="input-with-icon">
-                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                                <circle cx="12" cy="7" r="4"/>
-                            </svg>
-                            <input 
-                                type="text" 
-                                id="emailOrUsername" 
-                                name="emailOrUsername" 
-                                class="form-input" 
-                                placeholder="Enter your email or username"
-                                autocomplete="username"
-                                aria-describedby="emailOrUsername-error emailOrUsername-help"
-                                required
-                            >
-                        </div>    
-                    </div>
-                    <div id="emailOrUsername-help" class="form-help">
+                    <div class="relative">
+                        <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 transition-colors duration-150" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                        <input 
+                            type="text" 
+                            id="emailOrUsername" 
+                            name="emailOrUsername" 
+                            class="w-full pl-12 pr-4 py-3 border-2 border-gray-300 rounded-lg text-base bg-white text-gray-900 transition-all duration-150 outline-none focus:border-washu-red focus:shadow-lg focus:shadow-washu-red-hover invalid:border-red-500 invalid:focus:shadow-red-100" 
+                            placeholder="Enter your email or username"
+                            autocomplete="username"
+                            aria-describedby="emailOrUsername-error emailOrUsername-help"
+                            required
+                        >
+                    </div>    
+                    <div id="emailOrUsername-help" class="text-xs text-gray-500 mt-1">
                         Email or Username must be your WashU email ending with @wustl.edu
                     </div>
-                    <div id="emailOrUsername-error" class="form-error" role="alert" aria-live="polite"></div>
+                    <div id="emailOrUsername-error" class="text-xs text-red-500 mt-1 min-h-4" role="alert" aria-live="polite"></div>
                 </div>
 
-                <div class="form-group activation-row">
-                    <label for="activationCode" class="form-label">
-                      Activation Code
-                      <span class="required">*</span>
+                <div class="flex flex-col gap-2">
+                    <label for="activationCode" class="font-semibold text-gray-700 text-sm flex items-center gap-1">
+                        Activation Code
+                        <span class="text-red-500 font-bold">*</span>
                     </label>
                   
                     <!-- 同行：输入框 + 发送按钮 -->
-                    <div class="activation-input-row">
-                      <div class="input-with-icon">
-                        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                          <circle cx="12" cy="16" r="1"/>
-                          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                        </svg>
-                        <input 
-                          type="text" 
-                          id="activationCode" 
-                          name="activationCode" 
-                          class="form-input" 
-                          placeholder="Enter activation code"
-                          autocomplete="off"
-                          aria-describedby="activationCode-error activationCode-help"
-                          required
-                        >
-                      </div>
+                    <div class="flex items-center gap-3 sm:flex-row flex-col">
+                        <div class="relative flex-1">
+                            <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 transition-colors duration-150" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                <circle cx="12" cy="16" r="1"/>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                            </svg>
+                            <input 
+                                type="text" 
+                                id="activationCode" 
+                                name="activationCode" 
+                                class="w-full pl-12 pr-4 py-3 border-2 border-gray-300 rounded-lg text-base bg-white text-gray-900 transition-all duration-150 outline-none focus:border-washu-red focus:shadow-lg focus:shadow-washu-red-hover invalid:border-red-500 invalid:focus:shadow-red-100" 
+                                placeholder="Enter activation code"
+                                autocomplete="off"
+                                aria-describedby="activationCode-error activationCode-help"
+                                required
+                            >
+                        </div>
                   
-                      <button type="button" id="sendActivationCode" class="send-code-btn" disabled>
-                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                          <polyline points="22,6 12,13 2,6"/>
-                        </svg>
-                        <span class="btn-text">Send Activation Code</span>
-                      </button>
+                        <button type="button" id="sendActivationCode" class="bg-washu-red text-white border-none rounded-xl px-4 py-3 text-sm font-semibold cursor-pointer transition-all duration-250 flex items-center gap-2 justify-center shadow-md relative overflow-hidden min-h-12 w-full sm:w-48 flex-shrink-0 hover:bg-washu-red-dark hover:shadow-lg hover:shadow-washu-red-hover hover:-translate-y-0.5 active:translate-y-0 active:shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed disabled:shadow-none disabled:transform-none" disabled>
+                            <svg class="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                <polyline points="22,6 12,13 2,6"/>
+                            </svg>
+                            <span>Send Activation Code</span>
+                        </button>
                     </div>
                   
-                    <div id="activationCode-help" class="form-help">
-                      Enter the 6-digit code sent to your email
+                    <div id="activationCode-help" class="text-xs text-gray-500 mt-1">
+                        Enter the 6-digit code sent to your email
                     </div>
-                    <div id="activationCode-error" class="form-error" role="alert" aria-live="polite"></div>
-                    <div id="countdownDisplay" class="countdown-display" aria-live="polite"></div>
-                  </div>                  
+                    <div id="activationCode-error" class="text-xs text-red-500 mt-1 min-h-4" role="alert" aria-live="polite"></div>
+                    <div id="countdownDisplay" class="text-xs text-gray-600 text-center min-h-4 font-medium hidden" aria-live="polite"></div>
+                </div>                  
 
-                <div class="form-group">
-                    <button type="submit" id="submitBtn" class="submit-btn" disabled>
-                        <span class="btn-text">Login</span>
-                        <span class="btn-loading" aria-hidden="true">
-                            <svg class="loading-spinner" viewBox="0 0 24 24">
+                <div class="flex flex-col gap-2">
+                    <button type="submit" id="submitBtn" class="bg-washu-red text-white border-none rounded-xl px-6 py-3 text-base font-semibold cursor-pointer transition-all duration-250 relative overflow-hidden shadow-md min-h-12 w-full hover:bg-washu-red-dark hover:shadow-lg hover:shadow-washu-red-hover hover:-translate-y-0.5 active:translate-y-0 active:shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed disabled:shadow-none disabled:transform-none" disabled>
+                        <span class="transition-all duration-150">Login</span>
+                        <span class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-0 transition-all duration-150" aria-hidden="true">
+                            <svg class="w-6 h-6 text-white animate-spin" viewBox="0 0 24 24">
                                 <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" stroke-dasharray="31.416" stroke-dashoffset="31.416">
                                     <animate attributeName="stroke-dasharray" dur="2s" values="0 31.416;15.708 15.708;0 31.416" repeatCount="indefinite"/>
                                     <animate attributeName="stroke-dashoffset" dur="2s" values="0;-15.708;-31.416" repeatCount="indefinite"/>
@@ -102,7 +114,7 @@
                 </div>
             </form>
 
-            <div id="statusMessage" class="status-message" role="status" aria-live="polite"></div>
+            <div id="statusMessage" class="mt-6 p-4 rounded-lg text-sm font-medium text-center min-h-4 transition-all duration-150" role="status" aria-live="polite"></div>
         </div>
     </div>
 

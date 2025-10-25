@@ -174,6 +174,289 @@
         </div>
     </div>
 
-    <script src="./main.js"></script>
+    <script>
+        // ESpace Create Event - Main JavaScript
+        class EventForm {
+            constructor() {
+                this.form = document.getElementById('event-form');
+                this.statusMessage = document.getElementById('status-message');
+                this.successModal = document.getElementById('success-modal');
+                this.countdownElement = document.getElementById('countdown-number');
+                this.publishButton = document.getElementById('publish-event');
+                this.saveButton = document.getElementById('save-draft');
+                this.returnHomeButton = document.getElementById('return-home');
+                
+                this.tags = [];
+                this.countdownTimer = null;
+                
+                this.init();
+            }
+            
+            init() {
+                this.setupEventListeners();
+                this.loadDraft();
+                this.validateForm();
+            }
+            
+            setupEventListeners() {
+                // Form validation on input
+                this.form.addEventListener('input', () => this.validateForm());
+                this.form.addEventListener('change', () => this.validateForm());
+                
+                // Tags functionality
+                const tagsInput = document.getElementById('tags-input');
+                tagsInput.addEventListener('keypress', (e) => this.handleTagInput(e));
+                
+                // Photo upload
+                const photoInput = document.getElementById('promo-photo');
+                photoInput.addEventListener('change', (e) => this.handlePhotoUpload(e));
+                
+                // Buttons
+                this.saveButton.addEventListener('click', () => this.saveDraft());
+                this.publishButton.addEventListener('click', () => this.publishEvent());
+                this.returnHomeButton.addEventListener('click', () => this.returnToHome());
+                
+                // Modal close on outside click
+                this.successModal.addEventListener('click', (e) => {
+                    if (e.target === this.successModal) {
+                        this.hideModal();
+                    }
+                });
+            }
+            
+            handleTagInput(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const value = e.target.value.trim();
+                    if (value && !this.tags.includes(value)) {
+                        this.tags.push(value);
+                        this.renderTags();
+                        e.target.value = '';
+                    }
+                }
+            }
+            
+            renderTags() {
+                const tagsDisplay = document.getElementById('tags-display');
+                tagsDisplay.innerHTML = this.tags.map(tag => `
+                    <span class="bg-washu-red text-white px-2 py-1 rounded text-sm flex items-center gap-2">
+                        ${tag}
+                        <button type="button" class="bg-transparent border-none text-white cursor-pointer text-lg leading-none p-0 w-5 h-5 flex items-center justify-center rounded-full hover:bg-white hover:bg-opacity-20 transition-colors duration-200" onclick="eventForm.removeTag('${tag}')" aria-label="Remove ${tag} tag">×</button>
+                    </span>
+                `).join('');
+            }
+            
+            removeTag(tag) {
+                this.tags = this.tags.filter(t => t !== tag);
+                this.renderTags();
+                this.validateForm();
+            }
+            
+            handlePhotoUpload(e) {
+                const file = e.target.files[0];
+                const errorElement = document.getElementById('photo-error');
+                const previewElement = document.getElementById('photo-preview');
+                
+                // Clear previous errors and preview
+                errorElement.textContent = '';
+                errorElement.classList.add('hidden');
+                previewElement.innerHTML = '';
+                
+                if (!file) return;
+                
+                // Validate file type
+                const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+                if (!allowedTypes.includes(file.type)) {
+                    this.showError('photo-error', 'Please select a JPG, PNG, or WebP image.');
+                    return;
+                }
+                
+                // Validate file size (5MB = 5 * 1024 * 1024 bytes)
+                const maxSize = 5 * 1024 * 1024;
+                if (file.size > maxSize) {
+                    this.showError('photo-error', 'File size must be less than 5MB.');
+                    return;
+                }
+                
+                // Show preview
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    previewElement.innerHTML = `<img src="${e.target.result}" alt="Photo preview" class="max-w-xs max-h-xs rounded-lg shadow-md mx-auto">`;
+                };
+                reader.readAsDataURL(file);
+            }
+            
+            validateForm() {
+                const requiredFields = ['event-name', 'start-time', 'end-time', 'location'];
+                let isValid = true;
+                
+                // Clear all errors
+                document.querySelectorAll('[id$="-error"]').forEach(error => {
+                    error.classList.add('hidden');
+                    error.textContent = '';
+                });
+                
+                // Validate required fields
+                requiredFields.forEach(fieldId => {
+                    const field = document.getElementById(fieldId);
+                    if (!field.value.trim()) {
+                        this.showError(`${fieldId}-error`, 'This field is required.');
+                        isValid = false;
+                    }
+                });
+                
+                // Validate capacity (REQUIRED, allow 0)
+                const capacity = document.getElementById('capacity');
+                const rawCap = capacity.value.trim();
+                if (rawCap === '') {
+                    this.showError('capacity-error', 'This field is required.');
+                    isValid = false;
+                } else {
+                    const n = Number(rawCap);
+                    if (!Number.isInteger(n) || n < 0) {
+                        this.showError('capacity-error', 'Capacity must be an integer ≥ 0 (0 for unlimited).');
+                        isValid = false;
+                    }
+                }
+
+                // Validate time range
+                const startTime = document.getElementById('start-time');
+                const endTime = document.getElementById('end-time');
+                if (startTime.value && endTime.value) {
+                    const start = new Date(startTime.value);
+                    const end = new Date(endTime.value);
+                    if (end <= start) {
+                        this.showError('end-time-error', 'End time must be after start time.');
+                        isValid = false;
+                    }
+                }
+                
+                // Enable/disable publish button
+                this.publishButton.disabled = !isValid;
+                
+                return isValid;
+            }
+            
+            showError(elementId, message) {
+                const errorElement = document.getElementById(elementId);
+                errorElement.textContent = message;
+                errorElement.classList.remove('hidden');
+            }
+            
+            getFormData() {
+                const formData = new FormData(this.form);
+                return {
+                    eventName: formData.get('eventName'),
+                    tags: [...this.tags],
+                    startTime: formData.get('startTime'),
+                    endTime: formData.get('endTime'),
+                    location: formData.get('location'),
+                    capacity: Number(formData.get('capacity')),
+                    description: formData.get('description'),
+                    promoPhoto: formData.get('promoPhoto')
+                };
+            }
+            
+            saveDraft() {
+                const formData = this.getFormData();
+                try {
+                    localStorage.setItem('espace:draft', JSON.stringify(formData));
+                    this.showStatusMessage('Draft saved successfully.', 'success');
+                } catch (error) {
+                    this.showStatusMessage('Failed to save draft.', 'error');
+                }
+            }
+            
+            loadDraft() {
+                try {
+                    const draft = localStorage.getItem('espace:draft');
+                    if (draft) {
+                        const formData = JSON.parse(draft);
+                        this.populateForm(formData);
+                    }
+                } catch (error) {
+                    console.error('Failed to load draft:', error);
+                }
+            }
+            
+            populateForm(formData) {
+                if (formData.eventName) document.getElementById('event-name').value = formData.eventName;
+                if (formData.startTime) document.getElementById('start-time').value = formData.startTime;
+                if (formData.endTime) document.getElementById('end-time').value = formData.endTime;
+                if (formData.location) document.getElementById('location').value = formData.location;
+                if (formData.capacity !== undefined && formData.capacity !== null) {
+                    document.getElementById('capacity').value = formData.capacity;
+                }        
+                if (formData.description) document.getElementById('description').value = formData.description;
+                if (formData.tags) {
+                    this.tags = formData.tags;
+                    this.renderTags();
+                }
+            }
+            
+            publishEvent() {
+                if (!this.validateForm()) {
+                    return;
+                }
+                
+                const formData = this.getFormData();
+                
+                // Clear draft from localStorage
+                localStorage.removeItem('espace:draft');
+                
+                // Show success modal
+                this.showModal();
+                
+                // Start countdown
+                this.startCountdown();
+            }
+            
+            showModal() {
+                this.successModal.classList.remove('hidden');
+                this.successModal.setAttribute('aria-hidden', 'false');
+            }
+            
+            hideModal() {
+                this.successModal.classList.add('hidden');
+                this.successModal.setAttribute('aria-hidden', 'true');
+                if (this.countdownTimer) {
+                    clearInterval(this.countdownTimer);
+                }
+            }
+            
+            startCountdown() {
+                let countdown = 3;
+                this.countdownElement.textContent = countdown;
+                
+                this.countdownTimer = setInterval(() => {
+                    countdown--;
+                    this.countdownElement.textContent = countdown;
+                    
+                    if (countdown <= 0) {
+                        this.returnToHome();
+                    }
+                }, 1000);
+            }
+            
+            returnToHome() {
+                window.location.href = '/';
+            }
+            
+            showStatusMessage(message, type) {
+                this.statusMessage.textContent = message;
+                this.statusMessage.className = `p-4 mb-6 rounded-lg font-medium ${type === 'success' ? 'bg-washu-red-light text-green-600 border border-green-600' : 'bg-red-100 text-red-600 border border-red-600'}`;
+                
+                // Auto-hide after 3 seconds
+                setTimeout(() => {
+                    this.statusMessage.className = 'hidden p-4 mb-6 rounded-lg font-medium';
+                }, 3000);
+            }
+        }
+
+        // Initialize the form when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            window.eventForm = new EventForm();
+        });
+    </script>
 </body>
 </html>
